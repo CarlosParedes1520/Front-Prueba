@@ -1,0 +1,36 @@
+
+<nav class="navbar navbar-expand-lg bg-dark sticky-top ">
+    
+    <div class="container-fluid ">
+
+        <!-- <img src="../../../assets/img/logo_car.png" alt="Logo" width="80" height="35" class="align-text-top"> -->
+
+        <button class="navbar-toggler bg-white animate__animated animate__rubberBand" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+       
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <!-- <div class="offcanvas offcanvas-end"  id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel"> -->
+            
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title opcionMenu fw-bold " id="offcanvasNavbarLabel">MENU</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+
+            <!-- <div class="collapse navbar-collapse " id="navbarSupportedContent"> -->
+            <div class="offcanvas-body bg-dark"  id="navbarSupportedContent" >
+                <ul class="navbar-nav ms-4 ">
+                    <li class="nav-item ms-2 liOpcion">
+                        <a class="btn btn-primary"
+                            [routerLink]="'/conversaciones'"
+                        >Conversaciones</a>
+                    </li>
+                
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+</nav>

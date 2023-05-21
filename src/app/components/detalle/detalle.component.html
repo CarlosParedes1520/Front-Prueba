@@ -1,0 +1,114 @@
+<p class="text-center ">Detalle !</p>
+
+
+<div class="row">
+    <div class="col d-flex justify-content-center">
+
+        <form autocomplete="off" 
+              [formGroup]="miFormulario"
+              (ngSubmit)="submitFormulario()"
+              
+              class="border wd-100 mb-3 ">
+
+            <!-- codigo -->
+            <div class="row mb-3 mt-3 me-3 ms-3">
+                <label class="col-sm-4 col-form-label">codigo</label>
+                <div class="col-sm-8">
+                    <input type="number"
+                           class="form-control"
+                           formControlName="codigo"
+                           placeholder="Nombre del identificador">
+
+                           <span class="form-text text-danger"
+                           *ngIf="campoValido('codigo')">
+                             El campo  es requerido
+                            </span>
+                </div>
+            </div>
+
+            <!-- rol -->
+            <div class="row mb-3 mt-3 me-3 ms-3">
+                <label class="col-sm-4 col-form-label">rol</label>
+                <div class="col-sm-8">
+                    <input type="text"
+                           class="form-control"
+                           formControlName="rol"
+                           placeholder="Ingrese el sistema ">
+
+                           <span class="form-text text-danger"
+                           *ngIf="campoValido('rol')">
+                             El campo  es requerido
+                            </span>
+                </div>
+            </div>
+
+              <!-- mensaje -->
+              <div class="row mb-3 mt-3 me-3 ms-3">
+                <label class="col-sm-4 col-form-label">mensaje</label>
+                <div class="col-sm-8">
+                    <input type="text"
+                           class="form-control"
+                           formControlName="mensaje"
+                           placeholder="Ingrese el sistema ">
+
+                           <span class="form-text text-danger"
+                           *ngIf="campoValido('mensaje')">
+                             El campo  es requerido
+                            </span>
+                </div>
+            </div>
+
+            <!-- prompts -->
+            <div class="row mb-3 mt-3 me-3 ms-3">
+                <label class="col-sm-4 col-form-label">prompts</label>
+                <div class="col-sm-8">
+                    <input type="text"
+                            class="form-control"
+                            formControlName="prompts"
+                            placeholder="Ingrese el sistema ">
+
+                            <span class="form-text text-danger"
+                            *ngIf="campoValido('prompts')">
+                              El campo  es requerido
+                             </span>
+                </div>
+            </div>
+
+            <!-- Fecha -->
+            <div class="row mb-3 mt-3 me-3 ms-3">
+                <label class="col-sm-4 col-form-label">Fecha</label>
+                <div class="col-sm-8">
+                    <input type="date"
+                           class="form-control"
+                           formControlName="fecha"
+                           placeholder="Ingrese la fecha">
+
+                           <span class="form-text text-danger"
+                           *ngIf="campoValido('fecha')">
+                             El campo  es requerido
+                            </span>
+                </div>
+            </div>
+
+        
+            <div class="row">
+                <div class="col d-flex justify-content-center p-3">
+                    <button class="btn btn-primary float-center w-100 "
+                            [disabled]="miFormulario.pending || miFormulario.invalid"
+                            type="submit" >
+                        Crear conversacion
+                    </button>
+                </div>
+                <div class="col d-flex justify-content-center p-3">
+                    <button class="btn btn-primary float-center w-100 "
+                            [disabled]="miFormulario.pending "
+                            type="button"  (click)="verConversacion()">
+                        Ver conversacion
+                    </button>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
