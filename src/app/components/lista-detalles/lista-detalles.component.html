@@ -1,0 +1,27 @@
+<h1 class="text-center mb-4 mt-1 fs-1 fw-bold">Lista detalles </h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">codigo</th>
+          <th scope="col">rol</th>
+          <th scope="col">mensaje</th>
+          <th scope="col">prompts</th>
+          <th scope="col">fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let det of detalles">
+          <th scope="row">{{ det.id_detalle }}</th>
+          <td>{{ det.codigo }}</td>
+          <td>{{ det.rol }}</td>
+          <td>{{ det.mensaje }}</td>
+          <td>{{ det.prompts }}</td>
+          <td>{{ det.fecha }}</td>
+          <td>
+          </td>
+          
+        </tr>
+    </tbody>
+</table>
