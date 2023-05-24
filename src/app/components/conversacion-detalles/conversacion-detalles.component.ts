@@ -11,11 +11,11 @@ import { DetalleServiceService } from 'src/app/services/detalle-service.service'
 })
 export class ConversacionDetallesComponent {
 
+  // objeto de tipo Conversacion
   public conversacion: Conversacion = {
-
   };
 
-
+  // constructor
   constructor( private conversacionService: ConversacionServiceService,
     private activatedRouter: ActivatedRoute,
     private router: Router,
@@ -24,15 +24,11 @@ export class ConversacionDetallesComponent {
 
   }
 
-
-
+  // On-init
   ngOnInit(): void {
-   
     this.activatedRouter.params.subscribe(({id})=>{
-      console.log(id);
       if (id) {
         this.conversacionService.getConversacionPorId(id).subscribe((res)=> {
-          console.log(res);
           this.conversacion = res;
           
         });
@@ -42,10 +38,10 @@ export class ConversacionDetallesComponent {
     });
   }
 
+  // redirecciona al formulario editar o agregar
   navegar(navegarDetalles: boolean){
-    console.log(this.conversacion.id_conversacional);
     
-    if (!this.conversacion.id_conversacional) {
+    if (!this.conversacion.id_conversacional) {/////
       return;
     }
 
@@ -54,37 +50,33 @@ export class ConversacionDetallesComponent {
     } else {
       this.router.navigateByUrl(`/conversacion/${this.conversacion.id_conversacional}`);
     }
-
-    
   }
 
+  // Regresa al componente conversaciones
   regresar(){
     this.router.navigateByUrl(`conversaciones`);
   }
 
-
+  // borrar detalle por id 
   borrarDetalle(id?: number){
-
     if (!id) {
       return;
     }
 
     this.detalleServiceService.borrarDetalle(id).subscribe((res)=>{
        this.conversacion.detalles = this.conversacion.detalles?.filter(detalle => detalle.id_detalle !== id) ;
+       
     })
   }
 
 
-  
+  // editar detalle por id
   editarDetalle(id?: number){
 
     if (!id) {
       return;
     }
 
-    console.log(id);
-    
-    // this.detalleServiceService.actualizarDetalle()
     this.router.navigateByUrl(`detalles/edit/${id}`);
   }
 

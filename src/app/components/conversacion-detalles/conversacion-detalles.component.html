@@ -1,12 +1,14 @@
-<!-- <p class="text-center">Conversacion detalles </p> -->
+
+<h1 class="text-center mb-4 mt-1 fs-1 fw-bold">Conversacion detalles</h1>
 <div class="d-flex justify-content-end">
     <button (click)="regresar()" class="btn btn-danger ">regresar</button>
 </div>
 
 <div class="w-100 d-flex justify-content-center mb-3 mt-3">
     <div class="card " style="width: 25rem;">
-        <div class="card-body">
-            <h5 class="card-title">Conversacion   </h5>
+        <div class="card-body text-center">
+            <h4 class="card-title">Conversacion   </h4>
+            <h6 class="card-subtitle mb-2 text-body-secondary">identificador: {{conversacion.identificador}}</h6>
             <h6 class="card-subtitle mb-2 text-body-secondary">id: {{conversacion.id_conversacional}} -Sistema : {{conversacion.sistema}}</h6>
             <p class="card-text">Fecha: {{conversacion.fecha}}</p>
             <button (click)="navegar(false)" class="btn btn-primary me-1">editar</button>
@@ -51,3 +53,4 @@
         </tr>
     </tbody>
 </table>
+

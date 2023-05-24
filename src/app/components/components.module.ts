@@ -7,13 +7,15 @@ import { ConversacionComponent } from './conversacion/conversacion.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConversacionesComponent } from './conversaciones/conversaciones.component';
 import { ConversacionDetallesComponent } from './conversacion-detalles/conversacion-detalles.component';
+import { ListaDetallesComponent } from './lista-detalles/lista-detalles.component';
 
 @NgModule({
   declarations: [
     DetalleComponent,
     ConversacionComponent,
     ConversacionesComponent,
-    ConversacionDetallesComponent
+    ConversacionDetallesComponent,
+    ListaDetallesComponent
     
   ],
   imports: [

@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Detalle } from 'src/app/interfaces/chat';
+import { ConversacionServiceService } from 'src/app/services/conversacion-service.service';
 import { DetalleServiceService } from 'src/app/services/detalle-service.service';
-import { ValidadorService } from 'src/app/services/validador.service';
+import { MensajeService } from 'src/app/services/mensajes.service';
 
 @Component({
   selector: 'app-detalle',
@@ -16,82 +17,37 @@ import { ValidadorService } from 'src/app/services/validador.service';
 
 export class DetalleComponent {
 
+  // Objeto de tipo Detalle
+  private detalle: Detalle = {
 
+  };
+
+  // instancia del formulario reactivo
   miFormulario: FormGroup = this.fb.group({
     codigo: ['', [ Validators.required] ],
     rol: ['', [ Validators.required] ],
     mensaje: ['', [ Validators.required] ],
-    // idConversacion: ['', [ Validators.required] ],
     prompts: ['', [ Validators.required] ],
     fecha: ['', [ Validators.required] ],
   });
 
 
-  private detalle: Detalle = {
-
-  };
-  
+  // Constructor
   constructor( 
     private fb: FormBuilder,
      private detalleService: DetalleServiceService,
+     private conversacionService: ConversacionServiceService,
      private router: Router,
-     private activatedRouter: ActivatedRoute
+     private activatedRouter: ActivatedRoute,
+     private mensajeService: MensajeService,
   ) { }
 
-
-  crearDetalle(){
-    
-    const { conversacion } = this.detalle;
-    if ( !conversacion ) {
-      return;
-    }
-
-    const detalle: Detalle ={
-      conversacion,
-      ...this.miFormulario.value 
-    }
-      console.log(detalle);
-      
-    this.detalleService.registro(detalle).subscribe(
-      res => {
-        console.log(res);
-        this.miFormulario.reset();
-      }
-    );
-  }
-
-  ActualizarDetalle(){
-    
-    const { id_detalle } = this.detalle;
-    if ( !id_detalle ) {
-      return;
-    }
-
-    const detalle: Detalle ={
-      id_conversacion: this.detalle.conversacion?.id_conversacional,
-      ...this.miFormulario.value 
-    }
-      console.log(detalle);
-      
-    this.detalleService.actualizarDetalle(detalle, this.detalle.id_detalle!).subscribe(
-      res => {
-        console.log(res);
-        this.miFormulario.reset();
-        this.verConversacion()
-      }
-    );
-  }
-
-
+  // On-init
   ngOnInit(): void {
-    this.activatedRouter.params.subscribe(({id_con, id_det})=>{
-      console.log(id_con);
-      console.log(id_det);
+    this.activatedRouter.params.subscribe(({id_con, id_det})=>{ ///
       if (id_con) {
-        
-        console.log('entra');
-        
-        this.detalle.conversacion = { id_conversacional: id_con };
+ 
+        this.detalle.conversacion = { id_conversacional: id_con };//
         return;
       } 
 
@@ -112,19 +68,7 @@ export class DetalleComponent {
     });
   }
 
-  submitFormulario() {
-    if (this.detalle.id_detalle) {
-       this.ActualizarDetalle();
-    }else{
-      this.crearDetalle();
-    }
-  }
-
-
-  verConversacion(){
-    this.router.navigateByUrl(`conversacion_detalles/${this.detalle.conversacion?.id_conversacional}`);
-  }
-
+  //  cargar datos al formulario
   cargarDatosFormulario(){
     this.miFormulario.patchValue({
       codigo: this.detalle.codigo ?? '',
@@ -136,6 +80,76 @@ export class DetalleComponent {
   }
 
 
+  // Crear detalle
+  crearDetalle(){
+    
+    const { conversacion } = this.detalle;
+    if ( !conversacion ) {
+      return;
+    }
+
+    const detalle: Detalle ={
+      conversacion,
+      ...this.miFormulario.value 
+    }
+
+    this.detalleService.registro(detalle).subscribe(
+      res => {
+        console.log(res);
+        this.miFormulario.reset();
+      }, error => {
+
+        this.erroresBackEnd(error);
+
+      }
+    );
+
+    this.mensajeService.mensajeSweetInformacion('success', "Se agrego el detalle");
+  }
+
+
+  // Actualizar detalle
+  ActualizarDetalle(){
+    
+    const { id_detalle } = this.detalle;
+    if ( !id_detalle ) {
+      return;
+    }
+
+    const detalle: Detalle ={
+      id_conversacion: this.detalle.conversacion?.id_conversacional,
+      ...this.miFormulario.value 
+    }
+      console.log(detalle);
+      
+    this.detalleService.actualizarDetalle(detalle, this.detalle.id_detalle!).subscribe(
+      res => {
+        this.miFormulario.reset();
+        this.verConversacion()
+      }, error => {
+
+        this.erroresBackEnd(error);
+      
+      }
+    );
+    this.mensajeService.mensajeSweetInformacion('success', "Se actualizo el detalle");
+  }
+
+  // metodo submit del formulario
+  submitFormulario() {
+    if (this.detalle.id_detalle) {
+       this.ActualizarDetalle();
+    }else{
+      this.crearDetalle();
+    }
+  }
+
+  // navegar al componente conversacion_detalles
+  verConversacion(){
+    this.router.navigateByUrl(`conversacion_detalles/${this.detalle.conversacion?.id_conversacional}`);
+  }
+
+
     //Validar campos
     campoValido = ( campo: string ): boolean => {
       if ( this.miFormulario.get(campo)?.invalid && this.miFormulario.get(campo)?.touched) {
@@ -144,4 +158,18 @@ export class DetalleComponent {
         return false;
       }
     }
+
+  // Método para guardar los posibles erroes del back
+   erroresBackEnd = (error: any): void => {
+    if (error) {
+      console.log(error);
+      
+      if (error == 'El codigo ya existe en la base de datos.') {
+        this.mensajeService.mensajeSweetInformacion('error', "El codigo del detalle ya existe en la base de datos");
+      }else{
+        this.mensajeService.mensajeSweetInformacion('error', "Debe llenar todos los campos");
+      }
+      
+    } 
+  }
 }

@@ -1,23 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ConversacionServiceService } from 'src/app/services/conversacion-service.service';
 import { Conversacion } from '../../interfaces/chat';
 import { ActivatedRoute, Router } from '@angular/router';
-
-
+import { MensajeService } from 'src/app/services/mensajes.service';
 
 @Component({
   selector: 'app-conversacion',
   templateUrl: './conversacion.component.html',
-  styleUrls: ['./conversacion.component.css']
+  styleUrls: ['./conversacion.component.css'],
+ 
 })
+
+
 export class ConversacionComponent {
 
   // Variables
   public conversacion: Conversacion = {};
+  public conversaciones!: Conversacion [];
+  erroesBack: string[] = [];
 
-
-  //Formulario 
+  // instancia del Formulario 
   miFormulario: FormGroup = this.fb.group({
     identificador: ['', [ Validators.required] ],
     sistema: ['', [ Validators.required] ],
@@ -31,7 +34,13 @@ export class ConversacionComponent {
     private conversacionService: ConversacionServiceService,
     private router: Router,
     private activatedRouter: ActivatedRoute,
-  ) { }
+    private mensajeService: MensajeService,
+  ) { 
+
+
+  }
+
+
 
   // OnInit
   ngOnInit(): void {
@@ -39,7 +48,6 @@ export class ConversacionComponent {
       console.log(id);
       if (id && id !== 'nuevo') {
         this.conversacionService.getConversacionPorId(id).subscribe((res)=> {
-          console.log(res);
           this.conversacion = res;
           this.cargarDatosFormulario();
         });
@@ -47,26 +55,38 @@ export class ConversacionComponent {
     });
   }
 
+  // Cargar datos a actualizar
+  cargarDatosFormulario(){
+    this.miFormulario.patchValue({
+      identificador: this.conversacion.identificador ?? '',////////
+      sistema: this.conversacion.sistema ?? "",
+      fecha: this.conversacion.fecha ?? new Date(),
+    });
+  }
+  
+
   // crear conversacion
   crearConversacion(){
     
     const conversacion: Conversacion ={
-      ...this.miFormulario.value 
+      ...this.miFormulario.value
     }
       
     this.conversacionService.registro(conversacion).subscribe(
       res => {
-        console.log(res);
         
         const {id_conversacional}= res as Conversacion;
-        console.log(id_conversacional);
         
         if ( id_conversacional ) {
             this.router.navigateByUrl(`detalles/${id_conversacional}`);
         }
+      }, error => {
+
+        this.erroresBackEnd(error);
       }
     );
-
+    // mensaje 
+    this.mensajeService.mensajeSweetInformacion('success', "Se agrego la conversación");
   }
 
   // actualizar conversacion
@@ -76,30 +96,18 @@ export class ConversacionComponent {
       
       ...this.miFormulario.value 
     }
-
-      console.log(conversacion);
-      
+   
     this.conversacionService.actualizar(conversacion, this.conversacion.id_conversacional!).subscribe(
       res => {
-        console.log(res);
+        console.log(conversacion);
         
         const {id_conversacional}= res as Conversacion;
-        console.log(id_conversacional);
-        
+        this.mensajeService.mensajeSweetInformacion('success', "Se Actualizo la conversación " );
         if ( id_conversacional ) {
             this.router.navigateByUrl(`conversacion_detalles/${id_conversacional}`);
         }
       }
     );
-  }
-
-  // CArgar datos a actualizar
-  cargarDatosFormulario(){
-    this.miFormulario.patchValue({
-      identificador: this.conversacion.identificador ?? '',
-      sistema: this.conversacion.sistema ?? "",
-      fecha: this.conversacion.fecha ?? new Date(),
-    });
   }
 
 
@@ -121,4 +129,14 @@ export class ConversacionComponent {
       return false;
     }
   }
+
+
+   // Método para guardar los posibles erroes del back
+   erroresBackEnd = (error: any): void => {
+    if (error) {
+      this.mensajeService.mensajeSweetInformacion('error', "Debe llenar todos los campos");
+    } 
+  }
+
+
 }
