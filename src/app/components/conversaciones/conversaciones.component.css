@@ -1,0 +1,12 @@
+.selected {
+    background-color: #3856ff; /* El color de selección que deseas */
+    color: white;
+  }
+
+  .disabled-link {
+    pointer-events: none;
+    cursor: default;
+    color: #6c757d;
+    text-decoration: none;
+    opacity: 0.6;
+  }

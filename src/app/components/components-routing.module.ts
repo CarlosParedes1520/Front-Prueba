@@ -10,12 +10,13 @@ const routes: Routes = [
   {
     path:'',
     children: [
-      { path: 'conversacion_detalles/:id', component:  ConversacionDetallesComponent },
+      { path: 'conversacion_detalles/:page/:id', component:  ConversacionDetallesComponent },
       { path: 'detalles/:id_con', component:  DetalleComponent },
       { path: 'detalles/edit/:id_det', component:  DetalleComponent },
       { path: 'detalles', component:  ListaDetallesComponent },
       { path: 'conversacion/:id', component: ConversacionComponent },
       { path: 'conversaciones', component: ConversacionesComponent },
+      { path: 'conversaciones/:page', component: ConversacionesComponent },//
       { path: '**', redirectTo: 'conversacion' }
     ]
   }

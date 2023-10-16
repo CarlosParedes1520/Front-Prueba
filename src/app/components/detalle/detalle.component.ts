@@ -146,7 +146,7 @@ export class DetalleComponent {
 
   // navegar al componente conversacion_detalles
   verConversacion(){
-    this.router.navigateByUrl(`conversacion_detalles/${this.detalle.conversacion?.id_conversacional}`);
+    this.router.navigateByUrl(`conversacion_detalles/0/${this.detalle.conversacion?.id_conversacional}`);
   }
 
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ConversacionServiceService } from '../../services/conversacion-service.service';
 import { Conversacion } from 'src/app/interfaces/chat';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,62 +8,130 @@ import { Subscription } from 'rxjs';
   selector: 'app-conversaciones',
   templateUrl: './conversaciones.component.html',
   styleUrls: ['./conversaciones.component.css']
+ 
 })
 export class ConversacionesComponent {
 
+
+  //paginador
+  public totalElements = 0;
+  public totalPages = 0;
+  public numberOfElements=0;
+  public numeracionDeElPaginador: any =[];
+
   // variables
-  public conversaciones: Conversacion [] = []; 
+  // public conversaciones: Conversacion [] = []; 
   public conversacionesAct: Conversacion [] = []; 
-  public conversacion!: Conversacion;
-  public conversacion2!: Conversacion[];
+  public conversacion: Conversacion ={}
+  public conversacion1: Conversacion[]=[];
+  public conversacion2: Conversacion[]=[];
   public termino : String = ""; 
+  public list: any = this.listarConversacion();
+  public errorStatus: boolean = true;
+  paginaSeleccionada: number = -1
+
     // para poder cerrar subscripciones
     urlSubscription!: Subscription;
     urlSubscriptionBus!: Subscription;
     paginador!: any;
-    num = 0;
+     @Input() num = 0;
     mensajeError!: string;
+  
+
+
 
   // constructor
   constructor( 
       private conversacionService: ConversacionServiceService,
       private router: Router,
       private activatedRouter: ActivatedRoute,
-      ) {}
+      ) {
+       //this.numpage = this.conversacionService.numpage;
+      }
 
   // On-init
   ngOnInit(): void {
+    this.listaConversacionPag()
+  }
 
-    this.conversacionService.conversacionesLista().subscribe( resp => {
-      this.conversaciones = resp ?? [];
-      this.conversacionesAct = resp ?? [];
-      this.conversacion2= resp ?? [];
+
+  // Ciclos de vida ngOnDestroy
+  ngOnDestroy(): void {
+    this.cerrarSubscripcionLista();
+    this.cerrarSubscripcionUrlBus();
+  }
+
+  // Método para cambiar de paginacion
+  listaConversacionPag = (): void => {
+
+    this.urlSubscription = this.activatedRouter.paramMap.subscribe( params => {
+ 
+      let pagina = +params.get('page')!;
+      if ( !pagina) {
+        pagina = 0;
+      }
+
+      if (this.num < 0) {
+        this.num = 0;
+      }
+
+     pagina =  this.num ;
+
+      this.conversacionService.listarConversacionPaginacion(  this.num)
+        .subscribe( (response: any) => {
+
+          this.router.navigateByUrl(`conversaciones/${this.num}`);
+            if (response.content.length < 5) {
+              console.log("No hay mas");
+            }
+
+            if (response.empty) {
+              this.conversacion2 = [];
+              this.paginador = null;
+              // cambiar la ruta de navegación
+              this.router.navigateByUrl(`conversaciones/${this.num}`);
+              this.cerrarSubscripcionLista();
+              return;
+            }
+            // el dato emitido va a ser de tipo conversacion
+            this.conversacion2 = (response.content as Conversacion[]);
+            this.paginador = response;
+        }, error => {
+          this.cerrarSubscripcionLista();
+          if (error.status === 0 ) this.mensajeError = 'Error de conección con el servidor';
+        });
     });
-
-    this.updateDisplayedItems();
   }
 
 
   // buscar conversacion por id
   buscarXId(){
-   
+    this.errorStatus =true;
+    // si esta vacio el input 
     if (this.termino.trim().length == 0) {
-      this.conversaciones = this.conversacionesAct;
+     // this.conversacion2 = this.conversacionesAct;
+     this.errorStatus =true;
+      this.listaConversacionPag();
       return;
     }
 
-
     this.conversacionService.getConversacionPorId(this.termino.trim()).subscribe((res)=> {
-      this.conversacion = res
-
+      this.conversacion = res;
+      console.log(this.conversacion);
+      
       if (!res) {
-        this.conversaciones = this.conversacionesAct;
+        //this.conversacion2 = this.conversacionesAct;
+       // console.log('sii d');
+        
         return;
       }
 
-      this.conversaciones = [res];
+      this.conversacion2 = [res];
+      console.log( this.conversacion2);
       
-    },(error)=>{ console.log(error);
+    },(error)=>{ 
+      this.errorStatus = error.ok;
+  
     })
   }
 
@@ -76,55 +144,19 @@ export class ConversacionesComponent {
     }
 
     this.conversacionService.borrarConversacion(id).subscribe((res)=>{
-      this.conversaciones = this.conversaciones.filter(con => con.id_conversacional !== id) ;
-      this.conversacionesAct= this.conversaciones;
+      this.conversacion2 = this.conversacion2.filter(con => con.id_conversacional !== id) ;
+      this.conversacionesAct= this.conversacion2;
     })
+    location.reload();   
   }
 
-  navegar(id?: number){
-    if (!id) {
-      return;
-    }
-    this.router.navigateByUrl(`/conversacion_detalles/${id}`);
-  }
+
 
   crearNuevo(){
     this.router.navigateByUrl(`/conversacion/${'nuevo'}`);
   }
 
 
-  // Método para cambiar de paginacion
-  listaConversacionPag = (): void => {
-    // this.cerrarSubscripcionUrlBus();
-    this.urlSubscription = this.activatedRouter.paramMap.subscribe( params => {
-      // leemos y validamos el parametro url
-      //@ts-ignore
-      let pagina = +params.get('page');
-      if ( !pagina) {
-        pagina = 0;
-      }
-      this.num = pagina;
-      // metodo del servicio para listar
-      this.conversacionService.listarConversacionPaginacion(pagina)
-        .subscribe( (response: any) => {
-            if (response.empty) {
-              this.conversaciones = [];
-              this.paginador = null;
-              // cambiar la ruta de navegación
-              this.router.navigateByUrl('cliente/:page');
-              this.cerrarSubscripcionLista();
-              return;
-            }
-            // el dato emitido va a ser de tipo Cliente
-            this.conversaciones = (response.content as Conversacion[]);
-            this.paginador = response;
-        }, error => {
-          this.cerrarSubscripcionLista();
-          if (error.status === 0 ) this.mensajeError = 'Error de conección con el servidor';
-        }
-      );
-    });
-  }
 
     // Método para cerrar la Subscripción
     cerrarSubscripcionLista = (): void => {
@@ -132,30 +164,85 @@ export class ConversacionesComponent {
     }
   
 
-
-
-    ///////////////////////
-    // items: any[] = [
-      
-  
-    //   { name: 'Jane', age: 30 },
-    //   { name: 'John', age: 25 },
-    //   { name: 'Jane', age: 30 },
-    //   { name: 'John', age: 25 },
-    //   { name: 'Jane', age: 30 },
-    //   // Agregar más elementos si es necesario
-    // ];
-    pageSize = 5; // Tamaño de página
-    currentPage = 1; // Página actual
-    //displayedItems!: any[]; ==conversacion2
+    
+  // Método para cerrar la Subscripción
+  cerrarSubscripcionUrlBus = (): void => {
+    if ( this.urlSubscriptionBus ) this.urlSubscriptionBus.unsubscribe();
+  }
   
 
- 
-  
-    updateDisplayedItems() {
-      const startIndex = (this.currentPage - 1) * this.pageSize;
-   
+  // paginacion siguiente por url
+  siguientePagina = () => {
+    this.paginaSeleccionada = this.num;
+    this.num = this.num+1;
+    this.listaConversacionPag()
+  }
+
+   // paginacion Anteriror por url
+  anteriorePagina = () => {
+    this.num = this.num-1;
+    this.paginaSeleccionada = this.num-1;
+    this.listaConversacionPag()
+  }
+
+  // paginacion por numeros por url
+  // navegar(page:number,id?: number){
+  navegar(id?: number){
+    if (!id) {
+      return;
     }
+   
+    this.router.navigateByUrl(`/conversacion_detalles/0/${id}`);
+  }
+
+  // Cambiar de pagina por url
+  cambiarPagina(event: any){
+
+    console.log(event.target.innerText);
+    if (event.target.innerText == 'Inicio') {
+      event.target.value = 0;
+      this.num =event.target.value;
+    }else{
+      this.num = Number(event.target.innerText);
+    }
+
+    this.paginaSeleccionada = this.num-1;
+    this.listaConversacionPag()
   
-  
+  }
+
+
+  // listar los numeros del paginador
+  listarConversacion(): any {
+
+    this.urlSubscription = this.activatedRouter.paramMap.subscribe(params=>{
+      let pagina = +params.get('page')!;
+
+    
+            if ( !pagina) {
+              pagina = 0;
+            }
+              
+            if (this.num < 0) {
+              this.num = 0;
+            }
+        let numeradorPagina =  0; 
+        let arrayPagina: any =  []; 
+
+        this.conversacionService.listarConversacionPaginacion(pagina).subscribe((res:any)=>{ 
+          this.conversacion1= res as Conversacion[] 
+
+                this.totalElements = res.totalElements;
+                this.totalPages = res.totalPages;
+                this.numberOfElements = res.numberOfElements;
+
+                for (let index = 0; index < res.totalPages; index++) {
+                  this.numeracionDeElPaginador[index] = index
+                }
+        });
+        return arrayPagina;
+    });
+    
+  }
+
 }

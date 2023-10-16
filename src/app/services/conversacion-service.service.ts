@@ -10,6 +10,8 @@ import { Observable, throwError } from 'rxjs';
 })
 export class ConversacionServiceService {
 
+  public numpage= 6;
+
   // Ruta principal del entorno de producción
   private baseUrl: string = environment.baseUrl;
 
@@ -54,12 +56,22 @@ export class ConversacionServiceService {
 
   // Método que lista los registros de los seguimientos mediante un paginador
   listarConversacionPaginacion = (pagina: number) => {
-    return this.http.get(`${this.baseUrl}conversacion/pagina/${pagina}/5`)
+    return this.http.get(`${this.baseUrl}/conversacion/pagina/${pagina}`)
               .pipe(
                 catchError((error) => {
                   return throwError(error);
               })
     );
+  }
+
+    // Método que lista los registros de los detalle de las conversaciones mediante un paginador  
+  listarConversacionPaginacion2 (pagina: number, id: number){
+    return this.http.get(`${this.baseUrl}/conversacion/listaDetalle/${pagina}/${id}`)
+    //           .pipe(
+    //             catchError((error) => {
+    //               return throwError(error);
+    //           })
+    // );
   }
 
 

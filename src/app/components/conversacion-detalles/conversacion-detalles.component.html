@@ -8,19 +8,30 @@
     <div class="card " style="width: 25rem;">
         <div class="card-body text-center">
             <h4 class="card-title">Conversacion   </h4>
-            <h6 class="card-subtitle mb-2 text-body-secondary">identificador: {{conversacion.identificador}}</h6>
-            <h6 class="card-subtitle mb-2 text-body-secondary">id: {{conversacion.id_conversacional}} -Sistema : {{conversacion.sistema}}</h6>
-            <p class="card-text">Fecha: {{conversacion.fecha}}</p>
+            <h6 class="card-subtitle mb-2 text-body-secondary">identificador: {{conversacionSelecionado.identificador}}</h6>
+            <h6 class="card-subtitle mb-2 text-body-secondary">id: {{conversacionSelecionado.id_conversacional}} -Sistema : {{conversacionSelecionado.sistema}}</h6>
+            <p class="card-text">Fecha: {{conversacionSelecionado.fecha}}</p>
             <button (click)="navegar(false)" class="btn btn-primary me-1">editar</button>
             <button (click)="navegar(true)" class="btn btn-secondary me-1">Agregar Detalles</button>
             
         </div>
     </div>
+
+    <div class="ms-5">
+        <label>Buscar por id</label>
+
+        <div class="input-group col-sm-4">
+            <input (keyup)="buscarXId()" [(ngModel)]="termino" type="text" class="form-control">
+        </div>
+    </div>
     
 </div>
 
+<!-- TABLA -->
+<div *ngIf="( conversacion.detalles && conversacion.detalles.length !== 0 && errorStatus !== false ) || termino.trim().length == 0 ; else elseTemplate">
 
-<table class="table table-striped">
+
+<table class="table table-responsive  table-striped table-borderless table-sm" style="width: 100%; overflow-x: auto;">
     <thead>
         <tr>
           <th scope="col">#</th>
@@ -40,7 +51,7 @@
           <td>{{ conver.prompts }}</td>
           <td>{{ conver.fecha }}</td>
           <td>
-            <button class="btn btn-secondary me-2" (click)="editarDetalle(conver.id_detalle)">
+            <button class="btn btn-secondary me-2 mb-1" (click)="editarDetalle(conver.id_detalle)">
                 <i class="fa-solid fa-pen fw-bold "></i>
             </button>
               <button class="btn btn-danger " (click)="borrarDetalle(conver.id_detalle)">
@@ -53,4 +64,25 @@
         </tr>
     </tbody>
 </table>
+
+
+
+<nav aria-label="Page navigation example" class="w-100  d-flex justify-content-center"  *ngIf="termino.trim().length == 0 && totalPages >1">
+    <ul class="pagination">
+        <li  [ngClass]="{'disabled-link': paginaSeleccionada === -1}" class="page-item"><a class="page-link" (click)="anteriorePagina()" >Previous</a></li>
+        <li class="page-item d-flex"><a class="page-link" (click)="cambiarPagina($event)"  value="0" [class.selected]="paginaSeleccionada === -1">Inicio</a></li>
+        <li  class="page-item d-flex"><a   [class.selected]="paginaSeleccionada === item" class="page-link" (click)="cambiarPagina($event)" *ngFor="let item of numeracionDeElPaginador;" value="item">{{item+1}}</a></li>
+        <li  [ngClass]="{'disabled-link': this.numberOfElements == 0}" class="page-item"><a class="page-link" (click)="siguientePagina()" >Next</a></li>
+    </ul> 
+</nav>
+</div>
+<ng-template #elseTemplate>
+    <h1 class="text-center mt-5 ">No existe el id {{termino}}</h1>  
+</ng-template>
+
+
+
+
+
+
 

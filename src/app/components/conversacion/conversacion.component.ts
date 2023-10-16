@@ -12,14 +12,12 @@ import { MensajeService } from 'src/app/services/mensajes.service';
  
 })
 
-
 export class ConversacionComponent {
 
   // Variables
   public conversacion: Conversacion = {};
-  public conversaciones!: Conversacion [];
-  erroesBack: string[] = [];
-
+  //public conversaciones!: Conversacion [];
+  //erroesBack: string[] = [];
   // instancia del Formulario 
   miFormulario: FormGroup = this.fb.group({
     identificador: ['', [ Validators.required] ],
@@ -27,7 +25,6 @@ export class ConversacionComponent {
     fecha: ['', [ Validators.required] ],
   });
 
-  
   // Constructor
   constructor( 
     private fb: FormBuilder,
@@ -35,12 +32,7 @@ export class ConversacionComponent {
     private router: Router,
     private activatedRouter: ActivatedRoute,
     private mensajeService: MensajeService,
-  ) { 
-
-
-  }
-
-
+  ) { }
 
   // OnInit
   ngOnInit(): void {
@@ -67,7 +59,6 @@ export class ConversacionComponent {
 
   // crear conversacion
   crearConversacion(){
-    
     const conversacion: Conversacion ={
       ...this.miFormulario.value
     }
@@ -93,7 +84,6 @@ export class ConversacionComponent {
   actualizarConversacion(){
     
     const conversacion: Conversacion ={
-      
       ...this.miFormulario.value 
     }
    
@@ -104,12 +94,11 @@ export class ConversacionComponent {
         const {id_conversacional}= res as Conversacion;
         this.mensajeService.mensajeSweetInformacion('success', "Se Actualizo la conversación " );
         if ( id_conversacional ) {
-            this.router.navigateByUrl(`conversacion_detalles/${id_conversacional}`);
+            this.router.navigateByUrl(`conversacion_detalles/0/${id_conversacional}`);
         }
       }
     );
   }
-
 
   // accion de guardar y editar
   realizarAccion(){

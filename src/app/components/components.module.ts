@@ -9,6 +9,8 @@ import { ConversacionesComponent } from './conversaciones/conversaciones.compone
 import { ConversacionDetallesComponent } from './conversacion-detalles/conversacion-detalles.component';
 import { ListaDetallesComponent } from './lista-detalles/lista-detalles.component';
 
+
+
 @NgModule({
   declarations: [
     DetalleComponent,
@@ -23,6 +25,7 @@ import { ListaDetallesComponent } from './lista-detalles/lista-detalles.componen
     ComponentsRoutingModule,
     ReactiveFormsModule,
     FormsModule
+
   ],
   exports: [
     ConversacionComponent, 
